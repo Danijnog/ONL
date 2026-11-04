@@ -4,11 +4,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.linalg import eigh
 
-K = np.array([[2., -1., 0.], [-1., 2., -1.], [0., -1., 1.]])
+K = np.array([[2., -1., 0.], [-1., 2., -1.], [0., -1., 1.]]) # Dado no exercício
 M = np.eye(3) # Matriz identidade 3x3
 
 def R(x):
     """ Função objetivo: R(x) = (x^T K x) / (x^T M x)."""
+
     return (x @ K @ x) / (x @ M @ x)
 
 def grad(x):
@@ -18,10 +19,10 @@ def grad(x):
     return 2.0 * (K @ x - r * (M @ x)) / (x @ M @ x)
 
 def line_search_exact(x, d):
-    """Minimiza R(x + a d) exatamente: Rayleigh-Ritz 2x2 em span{x, d}."""
+    """Calcula a busca linear exata para o passo do gradiente conjugado."""
 
     V = np.column_stack([x, d])
-    Kr, Mr = V.T @ K @ V, V.T @ M @ V
+    Kr, Mr = V.T @ K @ V, V.T @ M @ V # Projeção de K e M no subespaço gerado 2x2
     w, U = eigh(Kr, Mr)
     c = U[:, 0]
     y = V @ c
@@ -38,6 +39,7 @@ def cg(x0, variant="PR", tol=1e-12, maxit=50):
     g = grad(x)
     d = -g
     hist = [dict(k=0, R=R(x), gn=np.linalg.norm(g), x=x.copy())]
+    
     for k in range(1, maxit + 1):
         if np.linalg.norm(g) < tol:
             break
